@@ -64,3 +64,22 @@ The ADC on the ATmega328P produces a 10-bit result (values from 0 to 1023) after
 |  3  | ADC Interrupt Enable: Enables the ADC conversion interrupt | ADIE |
 |  2-0  | ADC Prescaler: ADC clock prescaler | 	ADPS |
 
+- `ADC Prescaler (ADPS):`
+
+The prescaler controls the speed of the communication by dividing the system clock (which runs at 16 MHz for the ATmega328P microcontroller). The communication rate (clock rate) is determined by the formula:
+```
+  Rate = System Clock (16 MHz) / Prescaler
+```
+
+|  ADPS2 | ADPS1 | ADPS0 | Prescaler |
+| ------ |------ | ----- |---------- |
+|  0   |   0   |   0   |    2  |
+|  0   |   0   |   1   |    2  |
+|  0   |   1   |   0   |    4  |
+|  0   |   1   |   1   |    8  |
+|  1   |   0   |   0   |   16  |
+|  1   |   0   |   1   |   32  |
+|  1   |   1   |   0   |   64  |
+|  1   |   1   |   1   |  128  |
+
+For most applications, the ADC clock should be within the 50–200 kHz range for optimal performance. Based on this, a common default prescaler value is 128, resulting in an ADC clock rate of around 125 kHz.
