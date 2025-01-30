@@ -1,42 +1,34 @@
-enum class c_ADC_ref {
-  VCC,
-  AREF,
-  internal_1_1
+enum c_ADC_ref {
+  c_VCC,
+  c_AREF,
+  c_internal_1_1
 };
 
-
 bool c_init_adc(uint8_t pin, c_ADC_ref reference) {
-
   if (pin > 7)
     return false;
 
-  ADMUX &= 0xF0;  // Clear the lower 4 bits
-
-  // Selecting ADC Pin
-  ADMUX |= pin;
-
-  // Selecting ADC reference
-  uint8_t temp = 0;
+  // Selecting ADC reference (REFS1 and REFS0 are bits 7 and 6)
+  ADMUX = (ADMUX & 0x3F);  // reset REFS1 and REFS0 to 0
   switch (reference) {
-    case c_ADC_ref::VCC:
-        temp = 48; // 0110000
+    case c_VCC:
+      ADMUX |= (1 << REFS0);  // REFS1 = 0, REFS0 = 1
       break;
-    case c_ADC_ref::AREF:
-        temp = 16; // 0010000
+    case c_AREF:
+      // REFS1 = 0, REFS0 = 0
       break;
-    case c_ADC_ref::internal_1_1:
-        temp = 112; // 1110000
+    case c_internal_1_1:
+      ADMUX |= (1 << REFS1) | (1 << REFS0);  // REFS1 = 1, REFS0 = 1
       break;
     default:
       return false;
   }
-  ADMUX |= temp;
 
-  ADCSRA &= 0xF8; // Clear the previous prescaler setting
-  ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); // Set prescaler to 128 
+  // Selecting ADC Pin
+  ADMUX = (ADMUX & 0xF0) | (pin & 0x07);  // Mask and set the correct ADC channel
 
-  ADCSRA |= (1 << ADEN);   // turning adc on
-
+  // Set ADC prescaler to 128 (for 16 MHz -> ADC clock = 125 kHz)
+  ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
 
   return true;
 }
