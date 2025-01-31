@@ -3,7 +3,7 @@
 
 void c_serial_begin(int boud_rate) {
   // Setting up boud rate
-  uint16_t val = ((F_CPU / (16 * boud_rate)) - 1);
+  uint16_t val = ((F_CPU / (16UL * boud_rate)) - 1);
   UBRR0H = (val >> 8);
   UBRR0L = val;
 
